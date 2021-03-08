@@ -3,33 +3,31 @@ import ReactDOM from "react-dom";
 const Header = (props) => {
   return <h1>{props.text}</h1>;
 };
-//button with handleClick and name
 const Button = (props) => {
   return <button onClick={props.handleClick}>{props.name}</button>;
 };
-const StatDisplay = ({ name, value }) => {
+const Statistic = ({ name, value }) => {
   return (
     <p>
       {name} {value}
     </p>
   );
 };
-//Already has child component StatDisplay to Display individual Elements
 const Statistics = ({ good, bad, neutral }) => {
   if (good + bad + neutral === 0) {
     return <p>No Feedback Given</p>;
   } else {
     return (
       <div>
-        <StatDisplay value={good} name="good" />
-        <StatDisplay value={neutral} name="neutral" />
-        <StatDisplay value={bad} name="bad" />
-        <StatDisplay value={good + bad + neutral} name="all" />
-        <StatDisplay
+        <Statistic value={good} name="good" />
+        <Statistic value={neutral} name="neutral" />
+        <Statistic value={bad} name="bad" />
+        <Statistic value={good + bad + neutral} name="all" />
+        <Statistic
           value={(good - bad) / (good + bad + neutral)}
           name="average"
         />
-        <StatDisplay value={good / (good + bad + neutral)} name="positive" />
+        <Statistic value={good / (good + bad + neutral)} name="positive" />
       </div>
     );
   }
