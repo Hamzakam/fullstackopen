@@ -6,11 +6,26 @@ const Header = (props) => {
 const Button = (props) => {
   return <button onClick={props.handleClick}>{props.name}</button>;
 };
-const StatDisplay = (props) => {
+const StatDisplay = ({ name, value }) => {
   return (
     <p>
-      {props.name} {props.value}
+      {name} {value}
     </p>
+  );
+};
+const Statistics = ({ good, bad, neutral }) => {
+  return (
+    <div>
+      <StatDisplay value={good} name="good" />
+      <StatDisplay value={neutral} name="neutral" />
+      <StatDisplay value={bad} name="bad" />
+      <StatDisplay value={good + bad + neutral} name="all" />
+      <StatDisplay
+        value={(good - bad) / (good + bad + neutral)}
+        name="average"
+      />
+      <StatDisplay value={good / (good + bad + neutral)} name="positive" />
+    </div>
   );
 };
 const App = () => {
@@ -27,15 +42,7 @@ const App = () => {
       <Button handleClick={handleNeutralClick} name="neutral" />
       <Button handleClick={handleBadClick} name="bad" />
       <Header text="Statistics" />
-      <StatDisplay value={good} name="good" />
-      <StatDisplay value={neutral} name="neutral" />
-      <StatDisplay value={bad} name="bad" />
-      <StatDisplay value={good + bad + neutral} name="all" />
-      <StatDisplay
-        value={(good - bad) / (good + bad + neutral)}
-        name="average"
-      />
-      <StatDisplay value={good / (good + bad + neutral)} name="positive" />
+      <Statistics good={good} bad={bad} neutral={neutral} />
     </div>
   );
 };
