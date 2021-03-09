@@ -22,7 +22,6 @@ const Content = ({ parts }) => {
                     />
                 );
             })}
-            <Total parts={parts} />
         </div>
     );
 };
@@ -42,6 +41,7 @@ const Course = ({ course }) => {
         <div>
             <Header text={course.name} />
             <Content parts={course.parts} />
+            <Total parts={course.parts} />
         </div>
     );
 };
