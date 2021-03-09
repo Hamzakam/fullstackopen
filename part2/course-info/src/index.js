@@ -25,6 +25,7 @@ const Content = ({ parts }) => {
         </div>
     );
 };
+//No changes.
 const Total = ({ parts }) => {
     return (
         <b>
