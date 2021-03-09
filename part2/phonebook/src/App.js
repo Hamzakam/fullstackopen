@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import PersonForm from "./Components/PersonForm";
+import Persons from "./Components/Persons";
 const Filter = ({ handleFilterChange }) => {
     return (
         <div>
@@ -7,60 +10,9 @@ const Filter = ({ handleFilterChange }) => {
         </div>
     );
 };
-const InputForm = ({ text, value, handleOnChange }) => {
-    return (
-        <div>
-            {text}: <input value={value} onChange={handleOnChange} />
-        </div>
-    );
-};
-const PersonForm = ({
-    handleOnSubmit,
-    handleNameChange,
-    handleNumberChange,
-    newName,
-    newPhoneNumber,
-}) => {
-    return (
-        <form onSubmit={handleOnSubmit}>
-            <InputForm
-                text="name"
-                value={newName}
-                handleOnChange={handleNameChange}
-            />
-            <InputForm
-                text="number"
-                value={newPhoneNumber}
-                handleOnChange={handleNumberChange}
-            />
-            <div>
-                <button type="submit">add</button>
-            </div>
-        </form>
-    );
-};
-const Person = ({ name, phoneNumber }) => {
-    return (
-        <p>
-            {name} {phoneNumber}
-        </p>
-    );
-};
-const Persons = ({ persons, searchInput }) => {
-    return persons
-        .filter(
-            (person) =>
-                searchInput === "" ||
-                person.name.toLowerCase().includes(searchInput.toLowerCase())
-        )
-        .map(({ name, phoneNumber }) => (
-            <Person key={name} name={name} phoneNumber={phoneNumber} />
-        ));
-};
+
 const App = () => {
-    const [persons, setPersons] = useState([
-        { name: "Arto Hellas", phoneNumber: "043-123456" },
-    ]);
+    const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState("");
     const [newPhoneNumber, setNewPhoneNumber] = useState("");
     const [searchInput, setSearchInput] = useState("");
@@ -76,6 +28,12 @@ const App = () => {
             setNewPhoneNumber("");
         }
     };
+    useEffect(() => {
+        axios.get("http://127.0.0.1:3001/persons").then((res) => {
+            console.log(res.data);
+            setPersons(res.data);
+        });
+    }, []);
     const handleFilterChange = (e) => setSearchInput(e.target.value);
     const handleNameChange = (e) => setNewName(e.target.value);
     const handleNumberChange = (e) => setNewPhoneNumber(e.target.value);
