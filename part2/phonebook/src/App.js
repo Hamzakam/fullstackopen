@@ -1,5 +1,62 @@
 import React, { useState } from "react";
-
+const Filter = ({ handleFilterChange }) => {
+    return (
+        <div>
+            filter shown with
+            <input onChange={handleFilterChange} />
+        </div>
+    );
+};
+const InputForm = ({ text, value, handleOnChange }) => {
+    return (
+        <div>
+            {text}: <input value={value} onChange={handleOnChange} />
+        </div>
+    );
+};
+const PersonForm = ({
+    handleOnSubmit,
+    handleNameChange,
+    handleNumberChange,
+    newName,
+    newPhoneNumber,
+}) => {
+    return (
+        <form onSubmit={handleOnSubmit}>
+            <InputForm
+                text="name"
+                value={newName}
+                handleOnChange={handleNameChange}
+            />
+            <InputForm
+                text="number"
+                value={newPhoneNumber}
+                handleOnChange={handleNumberChange}
+            />
+            <div>
+                <button type="submit">add</button>
+            </div>
+        </form>
+    );
+};
+const Person = ({ name, phoneNumber }) => {
+    return (
+        <p>
+            {name} {phoneNumber}
+        </p>
+    );
+};
+const Persons = ({ persons, searchInput }) => {
+    return persons
+        .filter(
+            (person) =>
+                searchInput === "" ||
+                person.name.toLowerCase().includes(searchInput.toLowerCase())
+        )
+        .map(({ name, phoneNumber }) => (
+            <Person key={name} name={name} phoneNumber={phoneNumber} />
+        ));
+};
 const App = () => {
     const [persons, setPersons] = useState([
         { name: "Arto Hellas", phoneNumber: "043-123456" },
@@ -19,48 +76,24 @@ const App = () => {
             setNewPhoneNumber("");
         }
     };
+    const handleFilterChange = (e) => setSearchInput(e.target.value);
+    const handleNameChange = (e) => setNewName(e.target.value);
+    const handleNumberChange = (e) => setNewPhoneNumber(e.target.value);
+
     return (
         <div>
             <h2>Phonebook</h2>
-            <div>
-                filter shown with
-                <input onChange={(e) => setSearchInput(e.target.value)} />
-            </div>
+            <Filter handleFilterChange={handleFilterChange} />
             <h2>Add a new</h2>
-            <form onSubmit={handleOnSubmit}>
-                <div>
-                    name:{" "}
-                    <input
-                        value={newName}
-                        onChange={(e) => setNewName(e.target.value)}
-                    />
-                </div>
-                <div>
-                    number:{" "}
-                    <input
-                        value={newPhoneNumber}
-                        onChange={(e) => setNewPhoneNumber(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <button type="submit">add</button>
-                </div>
-            </form>
+            <PersonForm
+                handleOnSubmit={handleOnSubmit}
+                handleNameChange={handleNameChange}
+                handleNumberChange={handleNumberChange}
+                newName={newName}
+                newPhoneNumber={newPhoneNumber}
+            />
             <h2>Numbers</h2>
-            {persons.map((person) => {
-                if (
-                    person.name
-                        .toLowerCase()
-                        .includes(searchInput.toLowerCase()) ||
-                    searchInput == ""
-                ) {
-                    return (
-                        <p key={person.name}>
-                            {person.name} {person.phoneNumber}
-                        </p>
-                    );
-                }
-            })}
+            <Persons persons={persons} searchInput={searchInput} />
         </div>
     );
 };
