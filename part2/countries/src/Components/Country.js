@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Languages from "./Languages";
-
+import Weather from "./Weather";
 const Country = ({ country, singleShow }) => {
     const [showCountry, setShowCountry] = useState(false);
     const handleShowClick = () => setShowCountry(!showCountry);
@@ -18,6 +18,7 @@ const Country = ({ country, singleShow }) => {
                     src={country.flag}
                     alt={country.name + "flag"}
                 />
+                <Weather capital={country.capital} />
             </div>
         );
     } else {
