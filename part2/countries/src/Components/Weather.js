@@ -9,7 +9,6 @@ const Weather = ({ capital }) => {
                 `http://api.weatherstack.com/current?access_key=${api_key}&query=${capital}`
             )
             .then((res) => {
-                console.log(res.data);
                 setWeather(res.data.current);
             });
     }, [capital]);
