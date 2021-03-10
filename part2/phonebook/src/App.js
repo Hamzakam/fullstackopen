@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import PersonForm from "./Components/PersonForm";
 import Persons from "./Components/Persons";
+import personServices from "./services";
 const Filter = ({ handleFilterChange }) => {
     return (
         <div>
@@ -21,17 +21,17 @@ const App = () => {
         if (persons.some((person) => person.name === newName)) {
             alert(`${newName} is already added to phonebook`);
         } else {
-            setPersons(
-                persons.concat({ name: newName, phoneNumber: newPhoneNumber })
-            );
+            const newPerson = { name: newName, phoneNumber: newPhoneNumber };
+            personServices.createPerson(newPerson).then((res) => {
+                setPersons(persons.concat(res));
+            });
             setNewName("");
             setNewPhoneNumber("");
         }
     };
     useEffect(() => {
-        axios.get("http://127.0.0.1:3001/persons").then((res) => {
-            console.log(res.data);
-            setPersons(res.data);
+        personServices.getAll().then((res) => {
+            setPersons(res);
         });
     }, []);
     const handleFilterChange = (e) => setSearchInput(e.target.value);
