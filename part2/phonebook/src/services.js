@@ -8,9 +8,18 @@ const createPerson = (personObject) => {
     return axios.post(baseURL, personObject).then((res) => res.data);
 };
 
-const updatePerson = (id, personObject) => {
-    return axios.put(`${baseURL}/${id}`, personObject).then((res) => res.data);
+const updatePerson = (personObject, newPhoneNumber) => {
+    return axios
+        .put(`${baseURL}/${personObject.id}`, {
+            ...personObject,
+            phoneNumber: newPhoneNumber,
+        })
+        .then((res) => res.data);
 };
 
-const personServices = { getAll, createPerson, updatePerson };
+const deletePerson = (id) => {
+    return axios.delete(`${baseURL}/${id}`);
+};
+
+const personServices = { getAll, createPerson, updatePerson, deletePerson };
 export default personServices;

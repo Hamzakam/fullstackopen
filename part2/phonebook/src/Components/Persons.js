@@ -1,19 +1,26 @@
-const Person = ({ name, phoneNumber }) => {
+const Person = ({ person, handleDelete }) => {
     return (
-        <p>
-            {name} {phoneNumber}
-        </p>
+        <div>
+            <p>
+                {person.name} {person.phoneNumber}
+            </p>
+            <button onClick={() => handleDelete(person.id)}>delete</button>
+        </div>
     );
 };
-const Persons = ({ persons, searchInput }) => {
+const Persons = ({ persons, searchInput, handleDelete }) => {
     return persons
         .filter(
             (person) =>
                 searchInput === "" ||
                 person.name.toLowerCase().includes(searchInput.toLowerCase())
         )
-        .map(({ name, phoneNumber }) => (
-            <Person key={name} name={name} phoneNumber={phoneNumber} />
+        .map((person) => (
+            <Person
+                key={person.id}
+                person={person}
+                handleDelete={handleDelete}
+            />
         ));
 };
 export default Persons;

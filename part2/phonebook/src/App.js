@@ -19,7 +19,24 @@ const App = () => {
     const handleOnSubmit = (event) => {
         event.preventDefault();
         if (persons.some((person) => person.name === newName)) {
-            alert(`${newName} is already added to phonebook`);
+            if (
+                window.confirm(
+                    `${newName} is already added to phonebook,replace old number with new?`
+                )
+            ) {
+                const toUpdatePerson = persons.find(
+                    (person) => person.name === newName
+                );
+                personServices
+                    .updatePerson(toUpdatePerson, newPhoneNumber)
+                    .then((res) => {
+                        setPersons(
+                            persons.map((person) => {
+                                return person !== toUpdatePerson ? person : res;
+                            })
+                        );
+                    });
+            }
         } else {
             const newPerson = { name: newName, phoneNumber: newPhoneNumber };
             personServices.createPerson(newPerson).then((res) => {
@@ -37,7 +54,13 @@ const App = () => {
     const handleFilterChange = (e) => setSearchInput(e.target.value);
     const handleNameChange = (e) => setNewName(e.target.value);
     const handleNumberChange = (e) => setNewPhoneNumber(e.target.value);
-
+    const handleNumberDelete = (id) => {
+        if (window.confirm("Delete user?")) {
+            personServices.deletePerson(id).then(() => {
+                setPersons(persons.filter((person) => person.id !== id));
+            });
+        }
+    };
     return (
         <div>
             <h2>Phonebook</h2>
@@ -51,7 +74,11 @@ const App = () => {
                 newPhoneNumber={newPhoneNumber}
             />
             <h2>Numbers</h2>
-            <Persons persons={persons} searchInput={searchInput} />
+            <Persons
+                persons={persons}
+                searchInput={searchInput}
+                handleDelete={handleNumberDelete}
+            />
         </div>
     );
 };
