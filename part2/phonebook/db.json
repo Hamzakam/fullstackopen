@@ -1,19 +1,14 @@
 {
   "persons": [
     {
-      "phoneNumber": "12345",
-      "name": "artas hellas",
-      "id": 1
+      "name": "Hamza Kamal",
+      "phoneNumber": "1233545",
+      "id": 5
     },
     {
-      "name": "Ada Lovelace",
-      "phoneNumber": "902345678",
-      "id": 3
-    },
-    {
-      "name": "John Doe",
-      "phoneNumber": "8782876623",
-      "id": 4
+      "name": "ada lovelace",
+      "phoneNumber": "948223545",
+      "id": 7
     }
   ]
 }

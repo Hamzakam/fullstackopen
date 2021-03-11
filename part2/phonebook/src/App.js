@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Notification from "./Components/Notification";
 import PersonForm from "./Components/PersonForm";
 import Persons from "./Components/Persons";
 import personServices from "./services";
@@ -16,6 +17,7 @@ const App = () => {
     const [newName, setNewName] = useState("");
     const [newPhoneNumber, setNewPhoneNumber] = useState("");
     const [searchInput, setSearchInput] = useState("");
+    const [notificationMessage, setNotificationMessage] = useState(null);
     const handleOnSubmit = (event) => {
         event.preventDefault();
         if (persons.some((person) => person.name === newName)) {
@@ -35,12 +37,22 @@ const App = () => {
                                 return person !== toUpdatePerson ? person : res;
                             })
                         );
+                        setNotificationMessage({
+                            message: `Updated ${res.name}'s number to ${res.phoneNumber}`,
+                            type: "notification",
+                        });
+                        setTimeout(() => setNotificationMessage(null), 3000);
                     });
             }
         } else {
             const newPerson = { name: newName, phoneNumber: newPhoneNumber };
             personServices.createPerson(newPerson).then((res) => {
                 setPersons(persons.concat(res));
+                setNotificationMessage({
+                    message: `Added ${res.name} with number ${res.phoneNumber}`,
+                    type: "notification",
+                });
+                setTimeout(() => setNotificationMessage(null), 3000);
             });
             setNewName("");
             setNewPhoneNumber("");
@@ -54,17 +66,31 @@ const App = () => {
     const handleFilterChange = (e) => setSearchInput(e.target.value);
     const handleNameChange = (e) => setNewName(e.target.value);
     const handleNumberChange = (e) => setNewPhoneNumber(e.target.value);
-    const handleNumberDelete = (id) => {
+    const handleNumberDelete = (deletePerson) => {
         if (window.confirm("Delete user?")) {
-            personServices.deletePerson(id).then(() => {
-                setPersons(persons.filter((person) => person.id !== id));
-            });
+            personServices
+                .deletePerson(deletePerson.id)
+                .then(() => {
+                    setPersons(
+                        persons.filter(
+                            (person) => person.id !== deletePerson.id
+                        )
+                    );
+                })
+                .catch((err) => {
+                    setNotificationMessage({
+                        message: `Information of ${deletePerson.name} has already been removed from the server.`,
+                        type: "error",
+                    });
+                    setTimeout(() => setNotificationMessage(null), 3000);
+                });
         }
     };
     return (
         <div>
             <h2>Phonebook</h2>
             <Filter handleFilterChange={handleFilterChange} />
+            <Notification message={notificationMessage} />
             <h2>Add a new</h2>
             <PersonForm
                 handleOnSubmit={handleOnSubmit}
