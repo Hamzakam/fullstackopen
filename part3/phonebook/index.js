@@ -1,7 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
+const Person = require("./models/person");
 morgan.token("body", function getBody(req) {
     return JSON.stringify(req.body);
 });
@@ -14,52 +16,41 @@ app.use(
     )
 );
 app.use(cors());
-let persons = [
-    {
-        id: 1,
-        name: "Artas Hellas",
-        phoneNumber: "043-1333333",
-    },
-    {
-        id: 2,
-        name: "Ada Lovelace",
-        phoneNumber: "043-1333333",
-    },
-    {
-        id: 3,
-        name: "Dan Abramov",
-        phoneNumber: "043-1333333",
-    },
-    {
-        id: 4,
-        name: "Mary Poppendek",
-        phoneNumber: "043-1333333",
-    },
-];
 
 app.get("/", (req, res) => {
     res.send("<h1>Hello</h1>");
 });
 
 app.get("/api/persons", (req, res) => {
-    res.json(persons);
+    Person.find({})
+        .then((result) => {
+            res.json(result);
+        })
+        .catch((error) => {
+            console.log("Error sending request to Mongodb", error);
+        });
 });
 
 app.get("/info", (req, res) => {
-    const message = `Phone book has info for ${
-        persons.length
-    } people <br/>${new Date()}`;
-    res.send(message);
+    Person.find({})
+        .then((result) => {
+            const message = `Phone book has info for ${
+                result.length
+            } people <br/>${new Date()}`;
+            res.send(message);
+        })
+        .catch((error) => {
+            console.log("Error sending request to Mongodb", error);
+        });
 });
 
 app.get("/api/persons/:id", (req, res) => {
-    const id = Number(req.params.id);
-    const person = persons.find((person) => person.id === id);
-    if (person) {
-        res.json(person);
-    } else {
-        res.status(404).json({ error: "Person not found" });
-    }
+    const id = req.params.id;
+    Person.findById(id)
+        .then((result) => {
+            res.json(result);
+        })
+        .catch((err) => res.status(404).json({ Message: "Person not found" }));
 });
 
 app.delete("/api/persons/:id", (req, res) => {
@@ -68,20 +59,15 @@ app.delete("/api/persons/:id", (req, res) => {
     res.status(204).end();
 });
 
-const genRandomId = () => Math.floor(Math.random() * 10000);
-
 app.post("/api/persons/", (req, res) => {
     const { name, phoneNumber } = req.body;
-    const checkExist = persons.find((person) => person.name === name);
-    if (checkExist) {
-        res.status(409).json({ error: "User already exists" });
-    } else if (!name && !phoneNumber) {
-        res.status(400).json({ error: "Invalid name orphoneNnumber" });
+    if (!name && !phoneNumber && name !== "" && phoneNumber !== "") {
+        res.status(400).json({ error: "Invalid name or phoneNnumber" });
     } else {
-        const id = genRandomId();
-        const person = { id, name, phoneNumber };
-        persons = persons.concat(person);
-        res.status(200).json(person);
+        const person = new Person({ name, phoneNumber });
+        person.save().then((result) => {
+            res.status(200).json(person);
+        });
     }
 });
 

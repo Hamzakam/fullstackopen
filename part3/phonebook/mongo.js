@@ -1,15 +1,8 @@
+require("dotenv").config();
+
 const mongoose = require("mongoose");
 
-if (process.argv.length < 3) {
-    console.log(
-        "Please provide the password as an argument: node mongo.js <password>"
-    );
-    process.exit(1);
-}
-
-const password = process.argv[2];
-
-const url = `mongodb+srv://fullstack:${password}@cluster0.hbzfk.mongodb.net/personApp?retryWrites=true&w=majority`;
+const url = process.env.MONGODB_URI;
 
 mongoose.connect(url, {
     useNewUrlParser: true,
@@ -23,14 +16,15 @@ const personSchema = new mongoose.Schema({
 });
 const Person = mongoose.model("Person", personSchema);
 
-if (process.argv.length == 5) {
-    const name = process.argv[3];
-    const phoneNumber = process.argv[4];
+if (process.argv.length == 4) {
+    const name = process.argv[2];
+    const phoneNumber = process.argv[3];
 
     const person = new Person({ name, phoneNumber });
 
     person.save().then((res) => {
         console.log(`added ${name} number ${phoneNumber} to phonebook`);
+        console.log(res);
         mongoose.connection.close();
     });
 } else {
