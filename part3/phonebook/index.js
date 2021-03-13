@@ -4,6 +4,16 @@ const morgan = require("morgan");
 const cors = require("cors");
 const PORT = process.env.PORT;
 const Person = require("./models/person");
+const errorHandler = (error, request, response, next) => {
+    console.error(error.message);
+
+    if (error.name === "CastError") {
+        return response.status(400).send({ error: "malformatted id" });
+    }
+
+    next(error);
+};
+
 morgan.token("body", function getBody(req) {
     return JSON.stringify(req.body);
 });
@@ -16,7 +26,6 @@ app.use(
     )
 );
 app.use(cors());
-
 app.get("/", (req, res) => {
     res.send("<h1>Hello</h1>");
 });
@@ -44,19 +53,17 @@ app.get("/info", (req, res) => {
         });
 });
 
-app.get("/api/persons/:id", (req, res) => {
+app.get("/api/persons/:id", (req, res, next) => {
     const id = req.params.id;
     Person.findById(id)
         .then((result) => {
-            res.json(result);
+            if (result) {
+                res.json(result);
+            } else {
+                res.status(404).end();
+            }
         })
-        .catch((err) => res.status(404).json({ Message: "Person not found" }));
-});
-
-app.delete("/api/persons/:id", (req, res) => {
-    const id = Number(req.params.id);
-    persons = persons.filter((person) => person.id !== id);
-    res.status(204).end();
+        .catch((err) => next(err));
 });
 
 app.post("/api/persons/", (req, res) => {
@@ -66,11 +73,35 @@ app.post("/api/persons/", (req, res) => {
     } else {
         const person = new Person({ name, phoneNumber });
         person.save().then((result) => {
-            res.status(200).json(person);
+            res.status(200).json(result);
         });
     }
 });
 
+app.delete("/api/persons/:id", (req, res, next) => {
+    Person.findByIdAndDelete(req.params.id)
+        .then((result) => {
+            res.status(204).end();
+        })
+        .catch((err) => {
+            next(err);
+        });
+});
+
+app.put("/api/persons/:id", (req, res, next) => {
+    const person = { name: req.body.name, phoneNumber: req.body.phoneNumber };
+    Person.findByIdAndUpdate(req.params.id, person, { new: true })
+        .then((result) => res.json(result))
+        .catch((err) => next(err));
+});
+
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: "unknown endpoint" });
+};
+
+// handler of requests with unknown endpoint
+app.use(unknownEndpoint);
+app.use(errorHandler);
 app.listen(PORT, () => {
     console.log(`Listening at port ${PORT}`);
 });
