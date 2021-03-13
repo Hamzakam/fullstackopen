@@ -41,19 +41,35 @@ const App = () => {
                             message: `Updated ${res.name}'s number to ${res.phoneNumber}`,
                             type: "notification",
                         });
-                        setTimeout(() => setNotificationMessage(null), 3000);
+                        setTimeout(() => setNotificationMessage(null), 5000);
+                    })
+                    .catch((err) => {
+                        setNotificationMessage({
+                            message: err.response.data.error,
+                            type: "error",
+                        });
+                        setTimeout(() => setNotificationMessage(null), 5000);
                     });
             }
         } else {
             const newPerson = { name: newName, phoneNumber: newPhoneNumber };
-            personServices.createPerson(newPerson).then((res) => {
-                setPersons(persons.concat(res));
-                setNotificationMessage({
-                    message: `Added ${res.name} with number ${res.phoneNumber}`,
-                    type: "notification",
+            personServices
+                .createPerson(newPerson)
+                .then((res) => {
+                    setPersons(persons.concat(res));
+                    setNotificationMessage({
+                        message: `Added ${res.name} with number ${res.phoneNumber}`,
+                        type: "notification",
+                    });
+                    setTimeout(() => setNotificationMessage(null), 5000);
+                })
+                .catch((err) => {
+                    setNotificationMessage({
+                        message: err.response.data.error,
+                        type: "error",
+                    });
+                    setTimeout(() => setNotificationMessage(null), 5000);
                 });
-                setTimeout(() => setNotificationMessage(null), 3000);
-            });
             setNewName("");
             setNewPhoneNumber("");
         }
@@ -82,7 +98,7 @@ const App = () => {
                         message: `Information of ${deletePerson.name} has already been removed from the server.`,
                         type: "error",
                     });
-                    setTimeout(() => setNotificationMessage(null), 3000);
+                    setTimeout(() => setNotificationMessage(null), 5000);
                 });
         }
     };
