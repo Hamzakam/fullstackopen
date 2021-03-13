@@ -9,8 +9,9 @@ const errorHandler = (error, request, response, next) => {
 
     if (error.name === "CastError") {
         return response.status(400).send({ error: "malformatted id" });
+    } else if (error.name === "ValidationError") {
+        return response.status(400).send({ error: error.message });
     }
-
     next(error);
 };
 
@@ -66,16 +67,15 @@ app.get("/api/persons/:id", (req, res, next) => {
         .catch((err) => next(err));
 });
 
-app.post("/api/persons/", (req, res) => {
+app.post("/api/persons/", (req, res, next) => {
     const { name, phoneNumber } = req.body;
-    if (!name && !phoneNumber && name !== "" && phoneNumber !== "") {
-        res.status(400).json({ error: "Invalid name or phoneNnumber" });
-    } else {
-        const person = new Person({ name, phoneNumber });
-        person.save().then((result) => {
+    const person = new Person({ name, phoneNumber });
+    person
+        .save()
+        .then((result) => {
             res.status(200).json(result);
-        });
-    }
+        })
+        .catch((err) => next(err));
 });
 
 app.delete("/api/persons/:id", (req, res, next) => {
@@ -89,8 +89,14 @@ app.delete("/api/persons/:id", (req, res, next) => {
 });
 
 app.put("/api/persons/:id", (req, res, next) => {
-    const person = { name: req.body.name, phoneNumber: req.body.phoneNumber };
-    Person.findByIdAndUpdate(req.params.id, person, { new: true })
+    Person.findByIdAndUpdate(
+        req.params.id,
+        { phoneNumber: req.body.phoneNumber },
+        {
+            new: true,
+            runValidators: true,
+        }
+    )
         .then((result) => res.json(result))
         .catch((err) => next(err));
 });
