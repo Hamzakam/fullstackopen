@@ -81,6 +81,7 @@ app.post("/api/persons/", (req, res, next) => {
 app.delete("/api/persons/:id", (req, res, next) => {
     Person.findByIdAndDelete(req.params.id)
         .then((result) => {
+            console.log(result);
             res.status(204).end();
         })
         .catch((err) => {

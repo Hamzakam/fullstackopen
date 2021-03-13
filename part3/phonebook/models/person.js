@@ -9,7 +9,7 @@ mongoose
         useCreateIndex: true,
     })
     .then((result) => {
-        console.log("Connected to Mongodb");
+        console.log("Connected to Mongodb", result);
     })
     .catch((error) => {
         console.log("Unable to connect to Mongodb.Error:" + error);
