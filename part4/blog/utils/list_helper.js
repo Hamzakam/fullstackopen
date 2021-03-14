@@ -12,4 +12,19 @@ const favoriteBlog = (blogs) => {
         ? blogs.reduce((max, blog) => (max.likes > blog.likes ? max : blog))
         : {};
 };
-module.exports = { dummy, totalLikes, favoriteBlog };
+
+const mostBlogs = (blogs) => {
+    let max = {};
+    blogs.reduce((hashObject, blog) => {
+        hashObject[blog.author] =
+            hashObject[blog.author] === undefined
+                ? 1
+                : hashObject[blog.author] + 1;
+        if (max.author === undefined || hashObject[blog.author] > max.blogs) {
+            max = { author: blog.author, blogs: hashObject[blog.author] };
+        }
+        return hashObject;
+    }, {});
+    return max;
+};
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs };
