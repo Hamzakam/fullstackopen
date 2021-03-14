@@ -1,5 +1,6 @@
 const logger = require("./logger");
 
+//logging request body
 const responseLogger = (request, response, next) => {
     logger.info("METHOD:", request.method);
     logger.info("PATH:", request.path);
@@ -7,10 +8,12 @@ const responseLogger = (request, response, next) => {
     next();
 };
 
+//To deny access non-existing routes
 const unknownEndPoint = (request, response) => {
     response.status(404).json({ message: "Unknown Endpoint" });
 };
 
+//handles error and check type.
 const errorHandler = (error, request, response, next) => {
     console.error(error.message);
     if (error.name === "CastError") {
