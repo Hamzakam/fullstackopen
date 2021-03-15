@@ -41,4 +41,19 @@ const mostBlogs = (blogs) => {
     }
     return {};
 };
-module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs };
+
+//most likes with lodash
+const mostLikes = (blogs) => {
+    if (blogs.length > 0) {
+        const maxAuthorObj = _.maxBy(
+            Object.entries(_.groupBy(blogs, (blog) => blog.author)),
+            (ele) => ele[1].reduce((sum, blog) => sum + blog.likes, 0)
+        );
+        return {
+            author: maxAuthorObj[0],
+            likes: maxAuthorObj[1].reduce((sum, blog) => sum + blog.likes, 0),
+        };
+    }
+    return {};
+};
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes };
