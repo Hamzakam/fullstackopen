@@ -2,4 +2,4 @@
 Link to the heroku deployment is:[this].
 
 
-[heroku]:https://peaceful-scrubland-34016.herokuapp.com/
+[this]:https://peaceful-scrubland-34016.herokuapp.com/
